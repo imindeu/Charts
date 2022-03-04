@@ -351,7 +351,16 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 guard viewPortHandler.isInBoundsRight(barRect.origin.x) else { break }
 
                 context.setFillColor(dataSet.barShadowColor.cgColor)
-                context.fill(barRect)
+                
+                if dataSet.isRounded {
+                    let bezierPath = UIBezierPath(roundedRect: barRect,
+                                                  byRoundingCorners: [.topLeft, .topRight],
+                                                  cornerRadii: CGSize(width: 3.0, height: 3.0))
+                    context.addPath(bezierPath.cgPath)
+                    context.drawPath(using: .fill)
+                } else {
+                    context.fill(barRect)
+                }
             }
         }
         
@@ -379,7 +388,16 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 context.setFillColor(dataSet.color(atIndex: j).cgColor)
             }
             
-            context.fill(barRect)
+            
+            if dataSet.isRounded {
+                let bezierPath = UIBezierPath(roundedRect: barRect,
+                                              byRoundingCorners: [.topLeft, .topRight],
+                                              cornerRadii: CGSize(width: 3.0, height: 3.0))
+                context.addPath(bezierPath.cgPath)
+                context.drawPath(using: .fill)
+            } else {
+                context.fill(barRect)
+            }
             
             if drawBorder
             {

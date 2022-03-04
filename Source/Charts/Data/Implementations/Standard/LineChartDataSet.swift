@@ -19,6 +19,7 @@ open class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol
     public enum Mode: Int
     {
         case linear
+        case modifiedLinear
         case stepped
         case cubicBezier
         case horizontalBezier
@@ -118,6 +119,21 @@ open class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol
     
     /// `true` if drawing circles for this DataSet is enabled, `false` ifnot
     open var isDrawCirclesEnabled: Bool { return drawCirclesEnabled }
+    
+    /// The shadow offset
+    open var circleShadowOffset: CGSize = .zero
+    
+    /// The shadow blur
+    open var circleShadowBlur: CGFloat = 0
+    
+    /// The shadow color
+    open var circleShadowColor: NSUIColor? = nil
+    
+    /// If ture, drawing circle shadows is enabled
+    open var drawCircleShadowEnabled: Bool = false
+    
+    /// - returns: `true` if drawing circle shadows for this DataSet is enabled, `false` ifnot
+    open var isDrawCircleShadowEnabled: Bool { return drawCircleShadowEnabled }
     
     /// The color of the inner circle (the circle-hole).
     open var circleHoleColor: NSUIColor? = NSUIColor.white
