@@ -19,6 +19,7 @@ open class LineChartDataSet: LineRadarChartDataSet, ILineChartDataSet
     public enum Mode: Int
     {
         case linear
+        case modifiedLinear
         case stepped
         case cubicBezier
         case horizontalBezier

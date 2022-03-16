@@ -74,6 +74,9 @@ open class LineChartRenderer: LineRadarRenderer
         switch dataSet.mode
         {
         case .linear: fallthrough
+        case .modifiedLinear:
+            drawModifiedLinear(context: context, dataSet: dataSet)
+            
         case .stepped:
             drawLinear(context: context, dataSet: dataSet)
             
@@ -82,6 +85,84 @@ open class LineChartRenderer: LineRadarRenderer
             
         case .horizontalBezier:
             drawHorizontalBezier(context: context, dataSet: dataSet)
+        }
+        
+        context.restoreGState()
+    }
+    
+    @objc open func drawModifiedLinear(context: CGContext, dataSet: ILineChartDataSet)
+    {
+        guard let dataProvider = dataProvider else { return }
+        
+        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        
+        _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        
+        // get the color that is specified for this position from the DataSet
+        let drawingColor = dataSet.colors.first!
+        
+        // the path for the cubic-spline
+        let cubicPath = CGMutablePath()
+        
+        let valueToPixelMatrix = trans.valueToPixelMatrix
+        
+        if _xBounds.range >= 1
+        {
+            let firstIndex = _xBounds.min + 1
+            var prev: ChartDataEntry! = dataSet.entryForIndex(max(firstIndex - 2, 0))
+            var cur: ChartDataEntry! = dataSet.entryForIndex(max(firstIndex - 1, 0))
+            var next: ChartDataEntry! = cur
+            var nextIndex: Int = -1
+            
+            if cur == nil { return }
+            
+            // let the spline start
+            cubicPath.move(to: CGPoint(x: CGFloat(cur.x), y: CGFloat(cur.y)), transform: valueToPixelMatrix)
+            
+            for j in _xBounds.dropFirst()  // same as firstIndex
+            {
+                prev = cur
+                cur = nextIndex == j ? next : dataSet.entryForIndex(j)
+                
+                nextIndex = j + 1 < dataSet.entryCount ? j + 1 : j
+                next = dataSet.entryForIndex(nextIndex)
+                
+                if next == nil { break }
+                
+                cubicPath.addCurve(
+                    to: CGPoint(
+                        x: CGFloat(cur.x),
+                        y: CGFloat(cur.y)),
+                    control1: CGPoint(
+                        x: CGFloat(prev.x),
+                        y: CGFloat(prev.y)),
+                    control2: CGPoint(
+                        x: CGFloat(cur.x),
+                        y: CGFloat(cur.y)),
+                    transform: valueToPixelMatrix)
+            }
+        }
+        
+        context.saveGState()
+        
+        if dataSet.isDrawFilledEnabled
+        {
+            // Copy this path because we make changes to it
+            let fillPath = cubicPath.mutableCopy()
+            
+            drawCubicFill(context: context, dataSet: dataSet, spline: fillPath!, matrix: valueToPixelMatrix, bounds: _xBounds)
+        }
+        
+        if dataSet.isDrawLineWithGradientEnabled
+        {
+            drawGradientLine(context: context, dataSet: dataSet, spline: cubicPath, matrix: valueToPixelMatrix)
+        }
+        else
+        {
+            context.beginPath()
+            context.addPath(cubicPath)
+            context.setStrokeColor(drawingColor.cgColor)
+            context.strokePath()
         }
         
         context.restoreGState()
