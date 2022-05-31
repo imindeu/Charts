@@ -22,6 +22,9 @@ public protocol IBarChartDataSet: IBarLineScatterCandleBubbleChartDataSet
     /// `true` if this DataSet is stacked (stacksize > 1) or not.
     var isStacked: Bool { get }
     
+    /// Sets the top of bars to be rounded
+    var isRounded: Bool { get }
+    
     /// The maximum number of bars that can be stacked upon another in this DataSet.
     var stackSize: Int { get }
     
