@@ -387,6 +387,9 @@ open class ChartBaseDataSet: NSObject, IChartDataSet, NSCopying
     /// Set the visibility of this DataSet. If not visible, the DataSet will not be drawn to the chart upon refreshing it.
     open var visible = true
     
+    /// Sets the top of bars to be rounded
+    open var isRounded = true
+    
     /// `true` if this DataSet is visible inside the chart, or `false` ifit is currently hidden.
     open var isVisible: Bool
     {
