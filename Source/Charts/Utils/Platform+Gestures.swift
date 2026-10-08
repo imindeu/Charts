@@ -79,6 +79,11 @@ extension NSUIPinchGestureRecognizer
         }
     }
 
+    @objc final func nsuiNumberOfTouches() -> Int
+    {
+        return numberOfTouches
+    }
+
     @objc final func nsuiLocationOfTouch(_ touch: Int, inView: UIView?) -> CGPoint
     {
         return super.location(ofTouch: touch, in: inView)
@@ -161,6 +166,11 @@ extension NSUIPinchGestureRecognizer
         {
             magnification = newValue - 1.0
         }
+    }
+
+    final func nsuiNumberOfTouches() -> Int
+    {
+        return 1
     }
 
     /// FIXME: Currently there are no more than 1 touch in OSX gestures, and not way to create custom touch gestures.

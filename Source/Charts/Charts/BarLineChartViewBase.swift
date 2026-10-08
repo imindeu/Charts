@@ -600,19 +600,21 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
                 {
                     _gestureScaleAxis = .both
                 }
-                else
+                else if _scaleXEnabled != _scaleYEnabled
+                {
+                    _gestureScaleAxis = _scaleXEnabled ? .x : .y
+                }
+                else if recognizer.nsuiNumberOfTouches() >= 2
                 {
                     let x = abs(recognizer.location(in: self).x - recognizer.nsuiLocationOfTouch(1, inView: self).x)
                     let y = abs(recognizer.location(in: self).y - recognizer.nsuiLocationOfTouch(1, inView: self).y)
                     
-                    if _scaleXEnabled != _scaleYEnabled
-                    {
-                        _gestureScaleAxis = _scaleXEnabled ? .x : .y
-                    }
-                    else
-                    {
-                        _gestureScaleAxis = x > y ? .x : .y
-                    }
+                    _gestureScaleAxis = x > y ? .x : .y
+                }
+                else
+                {
+                    // No second touch to read the pinch direction from (e.g. a trackpad pinch), so scale both axes
+                    _gestureScaleAxis = .both
                 }
             }
         }
